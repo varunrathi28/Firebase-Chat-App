@@ -47,6 +47,13 @@ class LoginViewController: UIViewController {
     return textField
     }()
     
+    let nameSeparatorview : UIView = {
+    let view = UIView()
+        view.backgroundColor = UIColor(r:220, g:220 ,b:220)
+        return view
+    }()
+    
+    
     let emailTextField:UITextField = {
         let textField = UITextField()
         textField.placeholder = "Email"
@@ -115,9 +122,10 @@ class LoginViewController: UIViewController {
            containerViewHeightAnchor.constant = 100
              nameTextFieldHeightAnchor.isActive = false
 
-//            passwordTextFieldHeightAnchor = passwordTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.5)
-//            emailTextFieldHeightAnchor = emailTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.5)
-            
+            passwordTextFieldHeightAnchor = passwordTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.5)
+            passwordTextFieldHeightAnchor.isActive = true
+            emailTextFieldHeightAnchor = emailTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.5)
+            emailTextFieldHeightAnchor.isActive = true
             
         }
         else
@@ -164,6 +172,7 @@ class LoginViewController: UIViewController {
     func addContainerView()
     {
         containerView.addSubview(nameTextField)
+        containerView.addSubview(nameSeparatorview)
         containerView.addSubview(emailTextField)
         containerView.addSubview(passwordTextField)
         

@@ -8,10 +8,30 @@
 //
 
 import UIKit
-import SnapKit
+
+import Firebase
 
 class UserCell: UITableViewCell {
 
+    var message:Message?
+    {
+        didSet
+        {
+            
+            setUpNameAndProfileImage()
+            
+            detailTextLabel?.text = message?.text
+            
+            if let seconds = message?.timestamp?.doubleValue
+            {
+                let timeDate = Date(timeIntervalSince1970: seconds)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "hh:mm a"
+                timeLabel.text = dateFormatter.string(from: timeDate)
+            }
+            
+        }
+    }
     
     let profileImageView:UIImageView = {
     let imageView = UIImageView()
@@ -22,6 +42,16 @@ class UserCell: UITableViewCell {
         imageView.layer.masksToBounds = true
         return imageView
     
+    }()
+    
+    
+    
+    let timeLabel : UILabel = {
+    
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = UIColor.darkGray
+        return label
     }()
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
@@ -36,6 +66,14 @@ class UserCell: UITableViewCell {
 //        }
         
         
+        addSubview(timeLabel)
+        
+        NSLayoutConstraint.useAndActivateConstraints(constraints: [
+            
+            timeLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -20),
+            timeLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: -20)
+            ])
+        
         NSLayoutConstraint.useAndActivateConstraints(constraints: [
             
             profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8),
@@ -47,6 +85,40 @@ class UserCell: UITableViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setUpNameAndProfileImage()
+    {
+        let chatPartnerID:String
+        
+        if message?.fromId == FIRAuth.auth()?.currentUser?.uid
+        {
+            chatPartnerID = (message?.toId)!
+        }
+        else
+        {
+            chatPartnerID = (message?.fromId)!
+        }
+        
+        if let toId = message?.toId
+        {
+            let ref = FIRDatabase.database().reference().child("users").child(chatPartnerID)
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dictionary  = snapshot.value as? [String:AnyObject]
+                {
+                    self.textLabel?.text = dictionary["name"] as? String
+                    
+                    if let profileImageURL = dictionary["profileImageURL"] as? String
+                    {
+                        self.profileImageView.loadCachedImageWith(url: profileImageURL)
+                    }
+                }
+                
+            }, withCancel: nil)
+            
+        }
+        
     }
     
     

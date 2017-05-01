@@ -14,15 +14,17 @@ class ChatViewController: UITableViewController {
     
     let cellID = "messageCell"
     var messages = [Message]()
+    var messageDictionary = [String:Message]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         
         let image = UIImage(named: "create-message")
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openNewMessage))
         
-       tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
+       checkIfUserLoggedIn()
         
        
         // Do any additional setup after loading the view, typically from a nib.
@@ -30,10 +32,55 @@ class ChatViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-         checkIfUserLoggedIn()
-        observeMessages()
+        
+           // observeMessages()
+       
     }
     
+    
+    func observeUserMessages()
+    {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else
+        {
+            return
+        }
+        
+        let ref = FIRDatabase.database().reference().child("timeline").child(uid)
+        
+        ref.observe(.childAdded, with: { (snapshot) in
+            
+            let messageId = snapshot.key
+            let messageReference = FIRDatabase.database().reference().child("messages").child(messageId)
+            
+            messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dictionary = snapshot.value as? [String:AnyObject]
+                {
+                    let aMessage = Message()
+                    aMessage.setValuesForKeys(dictionary)
+                    
+                    if let toID = aMessage.toId
+                    {
+                        self.messageDictionary[toID] = aMessage
+                        self.messages = Array(self.messageDictionary.values)
+                        self.messages.sort(by: { (message1, message2) -> Bool in
+                            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+                        })
+                        
+                    }
+                    
+                }
+                
+                DispatchQueue.main.async {
+                      self.tableView.reloadData()
+                }
+              
+            }, withCancel: nil)
+        
+            
+        }, withCancel: nil)
+
+    }
     
     
     func observeMessages()
@@ -47,23 +94,18 @@ class ChatViewController: UITableViewController {
                 let aMessage = Message()
                 aMessage.setValuesForKeys(dictionary)
                 
-                let filterResults = self.messages.filter({ (message) -> Bool in
-                    return aMessage.text == message.text
-                })
-                
-                if filterResults.count == 0
+                if let toID = aMessage.toId
                 {
-                    self.messages.append(aMessage)
+                    self.messageDictionary[toID] = aMessage
+                    self.messages = Array( self.messageDictionary.values)
+                    self.messages.sort(by: { (message1, message2) -> Bool in
+                            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+                        })
                     
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                    }
+                    self.tableView.reloadData()
                 }
-                
                
             }
-            
-            
             print(snapshot)
         }, withCancel: nil)
     }
@@ -85,7 +127,11 @@ class ChatViewController: UITableViewController {
     
     func checkUserAndSetupNavigationBar()
     {
-       guard  let uid = FIRAuth.auth()?.currentUser?.uid else
+        messages.removeAll()
+        messageDictionary.removeAll()
+        observeUserMessages()
+        
+       guard let uid = FIRAuth.auth()?.currentUser?.uid else
        {
         return
         }
@@ -117,9 +163,6 @@ class ChatViewController: UITableViewController {
     
     func openNewMessage()
     {
-//        
-//        let chatLogVC = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
-//        navigationController?.pushViewController(chatLogVC, animated: true)
         let newMessageVC = NewMessageController()
         let navC = UINavigationController(rootViewController: newMessageVC)
         present(navC, animated: true, completion: nil)
@@ -131,13 +174,15 @@ class ChatViewController: UITableViewController {
         return messages.count
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "MessageCell") as? UserCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! UserCell
         
-    let message = messages[indexPath.row]
-        
-        
+        let message = messages[indexPath.row]
         if let toId = message.toId
         {
             let reference = FIRDatabase.database().reference().child("users").child(toId)
@@ -145,15 +190,24 @@ class ChatViewController: UITableViewController {
                 
                 if let dic = snapshot.value as? [String:AnyObject]
                 {
-                    cell. = dic["name"] as? String
+                    cell.textLabel?.text = dic["name"] as? String
                     
+                    if let profileImage = dic["profileImageURL"] as? String
+                    {
+                         cell.profileImageView.loadCachedImageWith(url: profileImage)
+                    }
                 }
                 
             }, withCancel: nil)
             
+          
+            
+          
         }
         
         cell.detailTextLabel?.text = message.text
+        
+        cell.message = message
         return cell
     }
     

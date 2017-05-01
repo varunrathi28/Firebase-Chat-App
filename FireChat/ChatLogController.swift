@@ -111,7 +111,26 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             let reference = FIRDatabase.database().reference().child("messages")
             let childReference = reference.childByAutoId()
             
-            childReference.updateChildValues(values)
+           // childReference.updateChildValues(values)
+            childReference.updateChildValues(values, withCompletionBlock: { (error, reference) in
+                
+                if error != nil
+                {
+                    print("FC:Error in Sending messages")
+                    return
+                }
+                
+              
+                let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!)
+                
+                // update message in parent message node as well... (Fan out)
+                
+                let messageID = childReference.key
+                timelineReference.updateChildValues([messageID: 1])
+                
+                let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!)
+                recipientUserRef.updateChildValues([messageID:1])
+            })
             inputTextField.text = ""
         }
         
