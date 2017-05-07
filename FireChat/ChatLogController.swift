@@ -22,6 +22,8 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         }
     }
     
+    var containerViewBottomAnchor:NSLayoutConstraint?
+    
     lazy var inputTextField :UITextField = {
         let textField = UITextField()
         textField.placeholder = "Enter a message..."
@@ -35,7 +37,10 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         navigationItem.title = recipient?.name
         setUpInputContainer()
         setUpCollectionView()
+        setUpKeyBoard()
     }
+    
+    // MARK: - Collection view properties
     
     func setUpCollectionView()
     {
@@ -47,6 +52,40 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         
     }
     
+    //MARK : - Keyboard
+    
+    func setUpKeyBoard()
+    {
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow(notification:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide(notification:)), name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    func handleKeyboardWillShow(notification:Notification)
+    {
+        let keyboardFrame = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+        
+        self.containerViewBottomAnchor?.constant = -keyboardFrame!.height
+         UIView.animate(withDuration: keyboardDuration!) { 
+            self.view.layoutIfNeeded()
+        }
+        
+    }
+    
+    func handleKeyboardWillHide(notification:Notification)
+    {
+          let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+        containerViewBottomAnchor?.constant = 0
+        UIView.animate(withDuration: keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
+
+
+    }
+    
+    
+    // MARK :- Chat View Functions
     
     func setUpInputContainer()
         {
@@ -62,10 +101,14 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             NSLayoutConstraint.useAndActivateConstraints(constraints: [
                 containerView.heightAnchor.constraint(equalToConstant: 50),
                 containerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1),
-                containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
                 containerView.leftAnchor.constraint(equalTo: view.leftAnchor)
                
                 ])
+            
+            // store a reference to bottom anchor (Use it for shifting in case of keyboards)
+            
+            containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            containerViewBottomAnchor?.isActive = true
             
             
             let sendButton = UIButton(type: .custom)
