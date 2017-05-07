@@ -46,6 +46,8 @@ class UserCell: UITableViewCell {
     
     
     
+
+    
     let timeLabel : UILabel = {
     
         let label = UILabel()
@@ -87,22 +89,11 @@ class UserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setUpNameAndProfileImage()
+     func setUpNameAndProfileImage()
     {
-        let chatPartnerID:String
-        
-        if message?.fromId == FIRAuth.auth()?.currentUser?.uid
+        if let id = message?.getChatParterID()
         {
-            chatPartnerID = (message?.toId)!
-        }
-        else
-        {
-            chatPartnerID = (message?.fromId)!
-        }
-        
-        if let toId = message?.toId
-        {
-            let ref = FIRDatabase.database().reference().child("users").child(chatPartnerID)
+            let ref = FIRDatabase.database().reference().child("users").child(id)
             ref.observeSingleEvent(of: .value, with: { (snapshot) in
                 
                 if let dictionary  = snapshot.value as? [String:AnyObject]

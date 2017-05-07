@@ -39,7 +39,12 @@ class NewMessageController: UITableViewController {
             print(snapshot)
            if let val = snapshot.value as? [String : AnyObject]
            {
-            let user = User(name: val["name"] as! String, email: val["email"] as! String, profileImageUrl: val["profileImageURL"] as! String,id:snapshot.key)
+            let user = User()
+            user.name = val["name"] as! String?
+            user.email = val["email"] as! String?
+            user.profileImageUrl = val["profileImageURL"] as! String?
+            user.id = snapshot.key
+//            let user = User(name: val["name"] as! String, email: val["email"] as! String, profileImageUrl: val["profileImageURL"] as! String,id:snapshot.key)
             
             self.arrUsers.append(user)
             DispatchQueue.main.async {

@@ -18,23 +18,22 @@ class ChatViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
+      
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         
         let image = UIImage(named: "create-message")
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openNewMessage))
         
-       checkIfUserLoggedIn()
-        
-       
         // Do any additional setup after loading the view, typically from a nib.
+        
+          tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
+        
+      
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-           // observeMessages()
-       
+          checkIfUserLoggedIn()
     }
     
     
@@ -59,27 +58,24 @@ class ChatViewController: UITableViewController {
                     let aMessage = Message()
                     aMessage.setValuesForKeys(dictionary)
                     
-                    if let toID = aMessage.toId
+                    if let chatPartnerID = aMessage.getChatParterID()
                     {
-                        self.messageDictionary[toID] = aMessage
+                        self.messageDictionary[chatPartnerID] = aMessage
                         self.messages = Array(self.messageDictionary.values)
                         self.messages.sort(by: { (message1, message2) -> Bool in
                             return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
                         })
                         
                     }
-                    
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
                 }
                 
-                DispatchQueue.main.async {
-                      self.tableView.reloadData()
-                }
-              
             }, withCancel: nil)
-        
             
         }, withCancel: nil)
-
+        
     }
     
     
@@ -121,7 +117,7 @@ class ChatViewController: UITableViewController {
         else
         {
             checkUserAndSetupNavigationBar()
-             observeMessages()
+
         }
     }
     
@@ -129,17 +125,49 @@ class ChatViewController: UITableViewController {
     {
         messages.removeAll()
         messageDictionary.removeAll()
-        observeUserMessages()
+        tableView.reloadData()
+       observeUserMessages()
         
        guard let uid = FIRAuth.auth()?.currentUser?.uid else
        {
         return
         }
-        let ref = FIRDatabase.database().reference().child("users").child(uid).observe(.value, with: { (snapshot) in
+        let ref = FIRDatabase.database().reference().child("users").child(uid)
+        ref.observe(.value, with: { (snapshot) in
             
             if let userDic = snapshot.value as? [String : AnyObject]
             {
-                self.navigationItem.title = userDic["name"] as? String
+                let navigationView = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 40))
+                 let userImage = UIImageView()
+                navigationView.addSubview(userImage)
+               
+                NSLayoutConstraint.useAndActivateConstraints(constraints: [
+                    
+                    userImage.centerYAnchor.constraint(equalTo: navigationView.centerYAnchor),
+                    userImage.widthAnchor.constraint(equalToConstant:40),
+                    userImage.heightAnchor.constraint(equalToConstant:40),
+                    userImage.leftAnchor.constraint(equalTo: navigationView.leftAnchor, constant: 10)
+                    ])
+                
+                let userName = UILabel()
+                navigationView.addSubview(userName)
+                
+                NSLayoutConstraint.useAndActivateConstraints(constraints: [
+                    
+                    userName.leftAnchor.constraint(equalTo: userName.rightAnchor, constant: 10),
+                    userName.centerYAnchor.constraint(equalTo: navigationView.centerYAnchor)
+                    ])
+                if let name = userDic["name"] as? String
+                {
+                    userName.text = name
+                }
+                
+                if let imageUrl = userDic["userDic"] as? String
+                {
+                    userImage.loadCachedImageWith(url: imageUrl)
+                }
+                
+                self.navigationItem.titleView = navigationView
             }
             
         }, withCancel: nil)
@@ -167,6 +195,16 @@ class ChatViewController: UITableViewController {
         let navC = UINavigationController(rootViewController: newMessageVC)
         present(navC, animated: true, completion: nil)
     }
+    
+    func openChatScreenForUser(user:User)
+    {
+        let chatLogVC = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+        chatLogVC.recipient = user
+        navigationController?.pushViewController(chatLogVC, animated: true)
+        
+    }
+    
+    
     
     //MARK :- Tableview datasource and delegates
     
@@ -199,10 +237,7 @@ class ChatViewController: UITableViewController {
                 }
                 
             }, withCancel: nil)
-            
-          
-            
-          
+
         }
         
         cell.detailTextLabel?.text = message.text
@@ -211,6 +246,28 @@ class ChatViewController: UITableViewController {
         return cell
     }
     
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let message = messages[indexPath.row]
+      
+        guard let partnerID = message.getChatParterID() else  { return}
+        
+        let ref = FIRDatabase.database().reference().child("users").child(partnerID)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            guard let dictionary = snapshot.value as? [String:AnyObject] else {
+                return
+            }
+            
+                let user = User()
+            user.id = partnerID
+                user.setValuesForKeys(dictionary)
+                self.openChatScreenForUser(user: user)
+            
+        }, withCancel: nil)
+    }
     
 }
 

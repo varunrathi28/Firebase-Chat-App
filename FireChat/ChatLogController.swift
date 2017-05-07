@@ -11,7 +11,16 @@ import Firebase
 
 class ChatLogController : UICollectionViewController , UITextFieldDelegate
 {
+    let cellID = "msgChatCell"
+    
+    var messages = [Message]()
     var recipient:User?
+    {
+        didSet{
+            navigationItem.title = recipient?.name
+            observeMessages()            
+        }
+    }
     
     lazy var inputTextField :UITextField = {
         let textField = UITextField()
@@ -22,11 +31,19 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         navigationItem.title = "Chat Log"
-        collectionView?.backgroundColor = UIColor.white
         navigationItem.title = recipient?.name
         setUpInputContainer()
+        setUpCollectionView()
+    }
+    
+    func setUpCollectionView()
+    {
+        collectionView?.backgroundColor = UIColor.white
+        collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellID)
+        collectionView?.alwaysBounceVertical = true
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 60, right:0 )
+        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0 )
         
     }
     
@@ -35,6 +52,8 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         {
         
             let containerView = UIView()
+            
+            containerView.backgroundColor = UIColor.white
            // containerView.backgroundColor = UIColor.red
             containerView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(containerView)
@@ -53,7 +72,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             sendButton.setTitle("Send", for: .normal)
             sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
            // sendButton.tintColor = UIColor.blue
-            sendButton.backgroundColor = UIColor.red
+            sendButton.setTitleColor(UIColor.blue, for: .normal)
             containerView.addSubview(sendButton)
             
             
@@ -103,11 +122,11 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             let toID = recipient?.id
             let fromID = FIRAuth.auth()?.currentUser?.uid
             let timestamp:NSNumber  = NSNumber(value: NSDate.timeIntervalSinceReferenceDate)
-            let values = ["text":inputTextField.text!,
+            let values:[String:Any] = ["text":inputTextField.text!,
                           "toId":toID,
                           "fromId":fromID,
                           "timestamp":timestamp
-                          ] as [String : Any]
+                          ]
             let reference = FIRDatabase.database().reference().child("messages")
             let childReference = reference.childByAutoId()
             
@@ -119,7 +138,6 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
                     print("FC:Error in Sending messages")
                     return
                 }
-                
               
                 let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!)
                 
@@ -133,11 +151,100 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             })
             inputTextField.text = ""
         }
+    }
+    
+    // MARK :- Fetch from Firebase
+    
+    
+    func observeMessages()
+    {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else
+        {
+            return
+        }
         
-      
+        let userMessages = FIRDatabase.database().reference().child("timeline").child(uid)
         
+        userMessages.observe(.childAdded, with: { (snapshot) in
+            
+            
+            let msgId = snapshot.key
+            let messageRef = FIRDatabase.database().reference().child("messages").child(msgId)
+            
+            messageRef.observeSingleEvent(of: .value, with: { (msgSnapshot) in
+                
+                guard let dic = msgSnapshot.value as? [String:AnyObject] else {
+                    return
+                }
+                
+                 let message = Message()
+                
+                message.setValuesForKeys(dic)
+                
+                if message.getChatParterID() == self.recipient?.id
+                {
+                    self.messages.append(message)
+                    DispatchQueue.main.async {
+                        self.collectionView?.reloadData()
+                    }
+   
+                }
+                
+                
+            }, withCancel: nil)
+            
+            
+        }, withCancel: nil)
+       
+    }
+    
+    
+    
+    // MARK : - CollectionView Methods
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return messages.count
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! ChatMessageCell
+        
+        let message = messages[indexPath.row]
+        cell.textView.text = message.text
+        cell.bubbleWidthAnchor?.constant = getBoundingRectForText(text: message.text!).width + 32
+        return cell
+    }
+    
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+       collectionView?.collectionViewLayout.invalidateLayout()
+    }
+    
+    
+}
+
+extension ChatLogController:UICollectionViewDelegateFlowLayout
+{
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        var height:CGFloat = 80
+        if let message = messages[indexPath.row].text
+        {
+            height = getBoundingRectForText(text: message).height + 20
+        }
+        
+        return CGSize(width: view.frame.width, height: height)
+    }
+    
+    
+     func getBoundingRectForText(text:String)->CGRect
+    {
+        let size = CGSize(width: 200, height: 1000)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        
+      return   NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 16 )], context: nil)
         
     }
     
 }
-

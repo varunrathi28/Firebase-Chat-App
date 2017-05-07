@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import PKHUD
 
 extension LoginViewController : UIImagePickerControllerDelegate,UINavigationControllerDelegate
 {
@@ -43,12 +44,42 @@ extension LoginViewController : UIImagePickerControllerDelegate,UINavigationCont
     
     //MARK: - Firebase Handlers
     
+    
+    func handleLogin()
+    {
+        guard let email = emailTextField.text , let password = passwordTextField.text else {
+            return
+        }
+        HUD.show(.progress)
+        
+        FIRAuth.auth()?.signIn(withEmail: email, password: password, completion: { (user , error) in
+            if let uid =  user?.uid
+            {
+                HUD.hide({ (value) in
+                    
+                    if value
+                    {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                    
+                })
+                
+                
+            }
+        })
+        
+    }
+    
+    
+    
     func handleRegister()
     {
         guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
             print("Form is not valid")
             return
         }
+        
+        HUD.show(.progress)
         
         FIRAuth.auth()?.createUser(withEmail:email, password:password, completion: { (user:FIRUser?, error) in
             
@@ -64,58 +95,58 @@ extension LoginViewController : UIImagePickerControllerDelegate,UINavigationCont
             
             // Success authentication
             
- 
+            
             let imageName = NSUUID().uuidString
             let imageRef = FIRStorage.storage().reference().child("profile_images").child("\(imageName).png")
             let imageData = UIImagePNGRepresentation(self.profileImageView.image!)
             
-           imageRef.put(imageData!, metadata: nil, completion: { (metadata, error) in
+            imageRef.put(imageData!, metadata: nil, completion: { (metadata, error) in
+                
+                if error != nil
+                {
+                    print(error)
+                    return
+                }
+                
+                if let downloadUrl = metadata?.downloadURL()?.absoluteString
+                {
+                    let values = ["name":name, "email":email, "profileImageURL":downloadUrl]
+                    self.registerUserWithID(uid: uid, values: values as [String : AnyObject])
+                    
+                }
+                
+                
+            })
             
-            if error != nil
+            
+            
+            
+        })
+    }
+    
+    private    func registerUserWithID(uid:String , values:[String:AnyObject])
+    {
+        let reference = FIRDatabase.database().reference()
+        let childRef = reference.child("Users").child(uid)
+        
+        childRef.updateChildValues(values, withCompletionBlock: { (err, reference) in
+            
+            if err != nil
             {
-                print(error)
+                print(err)
                 return
             }
+            print("Saved user successfully into Firebase db")
             
-            if let downloadUrl = metadata?.downloadURL()?.absoluteString
-            {
-                let values = ["name":name, "email":email, "profileImageURL":downloadUrl]
-                self.registerUserWithID(uid: uid, values: values as [String : AnyObject])
+            HUD.hide({ (value) in
                 
-            }
-           
-            
-           })
-            
-            
-            
-            
-    })
+                if value
+                {
+                    self.messagesController?.checkUserAndSetupNavigationBar()
+                    self.dismiss(animated: true, completion: nil)
+                }
+                
+            })
+        })
     }
-
-private    func registerUserWithID(uid:String , values:[String:AnyObject])
-   {
-    let reference = FIRDatabase.database().reference()
-    let childRef = reference.child("Users").child(uid)
-    
-    childRef.updateChildValues(values, withCompletionBlock: { (err, reference) in
-        
-        if err != nil
-        {
-            print(err)
-            return
-        }
-        print("Saved user successfully into Firebase db")
-        
-        self.messagesController?.checkUserAndSetupNavigationBar()
-        
-        self.dismiss(animated: true, completion: nil)
-    })
-    
-    
-    }
-    
-    
-    
- 
 }
