@@ -31,13 +31,89 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         return textField
     }()
     
+    lazy var inputContainerView:UIView = {
+        
+        let containerView = UIView()
+        containerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 50)
+        containerView.backgroundColor = UIColor.white
+        
+        let inputTextField = UITextField()
+        inputTextField.placeholder = "Enter some Text..."
+        inputTextField.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 50)
+        
+        let sendButton = UIButton(type: .custom)
+        sendButton.setTitle("Send", for: .normal)
+        sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
+        // sendButton.tintColor = UIColor.blue
+        sendButton.setTitleColor(UIColor.blue, for: .normal)
+        containerView.addSubview(sendButton)
+        
+        
+        NSLayoutConstraint.useAndActivateConstraints(constraints: [
+            sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor),
+            sendButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 1),
+            sendButton.widthAnchor.constraint(equalToConstant: 50)
+            ])
+        
+        containerView.addSubview(inputTextField)
+        inputTextField.delegate = self
+//        NSLayoutConstraint.useAndActivateConstraints(constraints: [
+//            
+//            inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8),
+//            inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor , multiplier:1),
+//            inputTextField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+//            inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor,constant :0)
+//            ])
+        
+        
+        let separtorView = UIView()
+        containerView.addSubview(separtorView)
+        separtorView.backgroundColor = UIColor.lightGray
+        
+        NSLayoutConstraint.useAndActivateConstraints(constraints: [
+            separtorView.leftAnchor.constraint(equalTo: containerView.leftAnchor),
+            separtorView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
+            separtorView.heightAnchor.constraint(equalToConstant: 0.7),
+            separtorView.topAnchor.constraint(equalTo: containerView.topAnchor)
+            
+            ])
+
+        containerView.addSubview(inputTextField)
+        return containerView
+    
+    }()
+    
+   override var inputAccessoryView: UIView?
+   {
+    
+    get
+    {
+        return inputContainerView
+    }
+    
+    }
+
+    override var canBecomeFirstResponder: Bool
+    {
+        return true
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Chat Log"
         navigationItem.title = recipient?.name
-        setUpInputContainer()
+        
         setUpCollectionView()
-        setUpKeyBoard()
+        
+//        setUpInputContainer()
+//        setUpKeyBoard()
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        deRegisterKeyboardNotifications()
     }
     
     // MARK: - Collection view properties
@@ -47,8 +123,9 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         collectionView?.backgroundColor = UIColor.white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellID)
         collectionView?.alwaysBounceVertical = true
-        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 60, right:0 )
-        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0 )
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom:8, right:0 )
+       // collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0 )
+        collectionView?.keyboardDismissMode = .interactive
         
     }
     
@@ -82,6 +159,11 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         }
 
 
+    }
+    
+    func deRegisterKeyboardNotifications()
+    {
+        NotificationCenter.default.removeObserver(self)
     }
     
     
@@ -159,7 +241,9 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
     
     func sendMessage()
     {
-        if let _ = inputTextField.text?.replacingOccurrences(of: " ", with: "")
+        inputTextField.resignFirstResponder()
+        
+        if  (inputTextField.text?.replacingOccurrences(of: " ", with: "").characters.count)! >  0
         {
             
             let toID = recipient?.id
@@ -277,7 +361,9 @@ extension ChatLogController:UICollectionViewDelegateFlowLayout
             height = getBoundingRectForText(text: message).height + 20
         }
         
-        return CGSize(width: view.frame.width, height: height)
+        
+        let boundsWidth = UIScreen.main.bounds.size.width
+        return CGSize(width: boundsWidth, height: height)
     }
     
     
