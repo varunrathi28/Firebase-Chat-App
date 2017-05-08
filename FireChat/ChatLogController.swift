@@ -437,6 +437,21 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
     
     func configureMessagecell(cell:ChatMessageCell , message:Message)
     {
+        
+        if let messageImageUrl = message.imageURL
+        {
+            cell.messageImageView.isHidden = false
+            cell.messageImageView.loadCachedImageWith(url: messageImageUrl)
+            cell.bubbleView.backgroundColor = UIColor.clear
+            cell.textView.isHidden = true
+            
+        }
+        else
+        {
+            cell.messageImageView.isHidden = true
+            cell.textView.isHidden = false
+        }
+        
         if message.fromId == FIRAuth.auth()?.currentUser?.uid
         {
             // Out going msg

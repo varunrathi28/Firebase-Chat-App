@@ -19,6 +19,7 @@ class ChatMessageCell: UICollectionViewCell {
         tv.backgroundColor = UIColor.clear
         tv.textColor = UIColor.white
         tv.isScrollEnabled = false
+        tv.isEditable = false
         return tv
     }()
     
@@ -48,7 +49,6 @@ class ChatMessageCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
-        
         return imageView
     }()
     
@@ -74,6 +74,8 @@ class ChatMessageCell: UICollectionViewCell {
         addSubview(profileImageView)
         
         bubbleView.addSubview(messageImageView)
+        
+        
         
         // Profile Imageview x,y,w,h
         
@@ -109,6 +111,14 @@ class ChatMessageCell: UICollectionViewCell {
             ])
         
         // Message Bubble view x,y,w,h
+        
+        NSLayoutConstraint.useAndActivateConstraints(constraints:[
+            messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor),
+            messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor),
+            messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor),
+            messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor)
+            ]
+        )
         
     }
     
