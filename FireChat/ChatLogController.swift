@@ -162,6 +162,11 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
             self.view.layoutIfNeeded()
         }
         
+        if messages.count > 0
+        {
+            let indexpath = IndexPath(item: self.messages.count-1, section: 0)
+            collectionView?.scrollToItem(at: indexpath, at: .bottom, animated: true)
+        }
     }
     
     func handleKeyboardWillHide(notification:Notification)
@@ -259,47 +264,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
         return true
     }
     
-    
-    func sendMessage()
-    {
-        inputTextField.resignFirstResponder()
-        
-        if  (inputTextField.text?.replacingOccurrences(of: " ", with: "").characters.count)! >  0
-        {
-            
-            let toID = recipient?.id
-            let fromID = FIRAuth.auth()?.currentUser?.uid
-            let timestamp:NSNumber  = NSNumber(value: NSDate.timeIntervalSinceReferenceDate)
-            let values:[String:Any] = ["text":inputTextField.text!,
-                          "toId":toID,
-                          "fromId":fromID,
-                          "timestamp":timestamp
-                          ]
-            let reference = FIRDatabase.database().reference().child("messages")
-            let childReference = reference.childByAutoId()
-            
-           // childReference.updateChildValues(values)
-            childReference.updateChildValues(values, withCompletionBlock: { (error, reference) in
-                
-                if error != nil
-                {
-                    print("FC:Error in Sending messages")
-                    return
-                }
-              
-                let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!).child(toID!)
-                
-                // update message in parent message node as well... (Fan out)
-                
-                let messageID = childReference.key
-                timelineReference.updateChildValues([messageID: 1])
-                
-                let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!).child(fromID!)
-                recipientUserRef.updateChildValues([messageID:1])
-            })
-            inputTextField.text = ""
-        }
-    }
+
     
     // MARK :- Fetch from Firebase
     
@@ -325,12 +290,11 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
                     return
                 }
                 
-                let message = Message()
-                
-                message.setValuesForKeys(dic)
-                self.messages.append(message)
+                self.messages.append(Message(dictionary: dic))
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
+                    let indexpath = IndexPath(item: self.messages.count - 1, section: 0)
+                    self.collectionView?.scrollToItem(at: indexpath, at: .bottom, animated: true)
                 }
             }, withCancel: nil)
             
@@ -368,7 +332,8 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
                 
                 if let downloadUrl = metadata?.downloadURL()?.absoluteString
                 {
-                    self.sendMessageWithImageUrl(imageUrl: downloadUrl)
+                    let size = CGSize(width: image.size.width, height: image.size.height)
+                    self.sendMessageWithImageUrl(imageUrl: downloadUrl,size:size )
                 }
             })
             
@@ -376,39 +341,68 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
         
     }
     
-    func sendMessageWithImageUrl(imageUrl:String)
+    // Message Send / Handling
+    
+    func sendMessage()
     {
-        let toID = recipient?.id
-        let fromID = FIRAuth.auth()?.currentUser?.uid
-        let timestamp:NSNumber  = NSNumber(value: NSDate.timeIntervalSinceReferenceDate)
-        let values:[String:Any] = ["imageURL":imageUrl,
-                                   "toId":toID,
-                                   "fromId":fromID,
-                                   "timestamp":timestamp
-        ]
-        let reference = FIRDatabase.database().reference().child("messages")
-        let childReference = reference.childByAutoId()
+        inputTextField.resignFirstResponder()
         
-        // childReference.updateChildValues(values)
-        childReference.updateChildValues(values, withCompletionBlock: { (error, reference) in
-            
-            if error != nil
-            {
-                print("FC:Error in Sending messages")
-                return
-            }
-            
-            let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!).child(toID!)
-            
-            // update message in parent message node as well... (Fan out)
-            
-            let messageID = childReference.key
-            timelineReference.updateChildValues([messageID: 1])
-            
-            let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!).child(fromID!)
-            recipientUserRef.updateChildValues([messageID:1])
-        })
+        if  (inputTextField.text?.replacingOccurrences(of: " ", with: "").characters.count)! >  0
+        {
+            let properties:[String:AnyObject] = ["text":inputTextField.text as AnyObject]
+            sendMessagewithProperties(properties: properties)
+            inputTextField.text = nil
+        }
+    }
+    
+    
+    func sendMessageWithImageUrl(imageUrl:String ,size:CGSize)
+    {
+        
+        let properties:[String:AnyObject] = ["imageURL":imageUrl as AnyObject ,
+                                       "imageWidth":size.width as AnyObject,
+                                       "imageHeight":size.height as AnyObject
+        ]
 
+        sendMessagewithProperties(properties: properties)
+    }
+    
+    
+    func sendMessagewithProperties(properties:[String:AnyObject]){
+        
+            let toID = recipient?.id
+            let fromID = FIRAuth.auth()?.currentUser?.uid
+            let reference = FIRDatabase.database().reference().child("messages")
+            let childReference = reference.childByAutoId()
+
+            let timestamp:NSNumber  = NSNumber(value: NSDate.timeIntervalSinceReferenceDate)
+            var values:[String:Any] = [
+                                       "toId":toID,
+                                       "fromId":fromID,
+                                       "timestamp":timestamp ]
+        
+        properties.forEach { values[$0] = $1  }
+            
+            // childReference.updateChildValues(values)
+            childReference.updateChildValues(values, withCompletionBlock: { (error, reference) in
+                
+                if error != nil
+                {
+                    print("FC:Error in Sending messages")
+                    return
+                }
+                
+                let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!).child(toID!)
+                
+                // update message in parent message node as well... (Fan out)
+                
+                let messageID = childReference.key
+                timelineReference.updateChildValues([messageID: 1])
+                
+                let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!).child(fromID!)
+                recipientUserRef.updateChildValues([messageID:1])
+            })
+    
     }
     
     
@@ -426,10 +420,17 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
         cell.textView.text = message.text
         
         configureMessagecell(cell: cell, message: message)
-        
+        // Text Message
         if let msgText = message.text
         {
              cell.bubbleWidthAnchor?.constant = getBoundingRectForText(text: msgText).width + 32
+        }
+            
+         // Image Message
+        else if message.imageURL != nil
+        {
+            cell.bubbleWidthAnchor?.constant = 200
+          
         }
        
         return cell
@@ -478,16 +479,26 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
        collectionView?.collectionViewLayout.invalidateLayout()
     }
+    
+    // Zooming 
+    
+    func performZoomingForImageView()
 }
 
 extension ChatLogController:UICollectionViewDelegateFlowLayout
 {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
+        let message = messages[indexPath.item]
         var height:CGFloat = 80
-        if let message = messages[indexPath.row].text
+
+        if let text = message.text
         {
-            height = getBoundingRectForText(text: message).height + 20
+            height = getBoundingRectForText(text:text).height + 20
+
+        }
+        else if let cellWidth = message.imageWidth?.floatValue, let cellHeight = message.imageHeight?.floatValue
+        {
+            height = CGFloat((cellHeight/cellWidth) * 200)
         }
         
         let boundsWidth = UIScreen.main.bounds.size.width

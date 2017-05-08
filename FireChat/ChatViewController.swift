@@ -66,8 +66,7 @@ class ChatViewController: UITableViewController {
             
             if let dictionary = snapshot.value as? [String:AnyObject]
             {
-                let aMessage = Message()
-                aMessage.setValuesForKeys(dictionary)
+                let aMessage = Message(dictionary: dictionary)
                 
                 if let chatPartnerID = aMessage.getChatParterID()
                 {

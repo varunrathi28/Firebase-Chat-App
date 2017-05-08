@@ -49,6 +49,8 @@ class ChatMessageCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoom(gesture:))))
         return imageView
     }()
     
@@ -119,6 +121,11 @@ class ChatMessageCell: UICollectionViewCell {
             messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor)
             ]
         )
+        
+    }
+    
+    func handleZoom(gesture:UITapGestureRecognizer)
+    {
         
     }
     
