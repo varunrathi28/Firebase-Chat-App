@@ -191,6 +191,19 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
                
                 ])
             
+            let uploadImageIcon = UIImageView()
+            uploadImageIcon.image = UIImage(named:"upload")
+            containerView.addSubview(uploadImageIcon)
+            
+            NSLayoutConstraint.useAndActivateConstraints(constraints: [
+                
+                uploadImageIcon.leftAnchor.constraint(equalTo: containerView.leftAnchor),
+                uploadImageIcon.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                uploadImageIcon.widthAnchor.constraint(equalToConstant: 44),
+                uploadImageIcon.heightAnchor.constraint(equalToConstant: 44)
+                ])
+            
+            
             // store a reference to bottom anchor (Use it for shifting in case of keyboards)
             
             containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -216,7 +229,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             inputTextField.delegate = self
             NSLayoutConstraint.useAndActivateConstraints(constraints: [
                 
-                inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8),
+                inputTextField.leftAnchor.constraint(equalTo: uploadImageIcon.rightAnchor, constant: 8),
                 inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor , multiplier:1),
                 inputTextField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
                 inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor,constant :0)
@@ -270,14 +283,14 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
                     return
                 }
               
-                let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!)
+                let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!).child(toID!)
                 
                 // update message in parent message node as well... (Fan out)
                 
                 let messageID = childReference.key
                 timelineReference.updateChildValues([messageID: 1])
                 
-                let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!)
+                let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!).child(fromID!)
                 recipientUserRef.updateChildValues([messageID:1])
             })
             inputTextField.text = ""
@@ -289,12 +302,12 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
     
     func observeMessages()
     {
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else
+        guard let uid = FIRAuth.auth()?.currentUser?.uid, let partnerId = recipient?.id else
         {
             return
         }
         
-        let userMessages = FIRDatabase.database().reference().child("timeline").child(uid)
+        let userMessages = FIRDatabase.database().reference().child("timeline").child(uid).child(partnerId)
         
         userMessages.observe(.childAdded, with: { (snapshot) in
             
@@ -308,28 +321,28 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
                     return
                 }
                 
-                 let message = Message()
+                let message = Message()
                 
                 message.setValuesForKeys(dic)
-                
-                if message.getChatParterID() == self.recipient?.id
-                {
-                    self.messages.append(message)
-                    DispatchQueue.main.async {
-                        self.collectionView?.reloadData()
-                    }
-   
+                self.messages.append(message)
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
                 }
-                
-                
             }, withCancel: nil)
             
             
         }, withCancel: nil)
-       
+        
     }
     
     
+    // MARK : Upload Image
+    
+    func handleUploadImage()
+    {
+        
+    }
+
     
     // MARK : - CollectionView Methods
     
@@ -362,7 +375,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         else
         {
             // Incomming msg
-            if let profileImg = self.recipient?.profileImageUrl
+            if let profileImg = self.recipient?.profileImageURL
             {
                 cell.profileImageView.loadCachedImageWith(url: profileImg)
             }

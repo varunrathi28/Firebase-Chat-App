@@ -127,7 +127,7 @@ extension LoginViewController : UIImagePickerControllerDelegate,UINavigationCont
     private    func registerUserWithID(uid:String , values:[String:AnyObject])
     {
         let reference = FIRDatabase.database().reference()
-        let childRef = reference.child("Users").child(uid)
+        let childRef = reference.child("users").child(uid)
         
         childRef.updateChildValues(values, withCompletionBlock: { (err, reference) in
             

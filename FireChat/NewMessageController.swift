@@ -33,7 +33,7 @@ class NewMessageController: UITableViewController {
     
     func fetchUsers()
     {
-        let ref = FIRDatabase.database().reference().child("Users")
+        let ref = FIRDatabase.database().reference().child("users")
         
         ref.observe(.childAdded, with: { (snapshot) in
             print(snapshot)
@@ -42,7 +42,7 @@ class NewMessageController: UITableViewController {
             let user = User()
             user.name = val["name"] as! String?
             user.email = val["email"] as! String?
-            user.profileImageUrl = val["profileImageURL"] as! String?
+            user.profileImageURL = val["profileImageURL"] as! String?
             user.id = snapshot.key
 //            let user = User(name: val["name"] as! String, email: val["email"] as! String, profileImageUrl: val["profileImageURL"] as! String,id:snapshot.key)
             
@@ -74,7 +74,7 @@ class NewMessageController: UITableViewController {
         let user = arrUsers[indexPath.row]
         cell.textLabel?.text = "\(user.name!)"
         cell.detailTextLabel?.text = "\(user.email!)"
-       if  let url = user.profileImageUrl
+       if  let url = user.profileImageURL
        {
             cell.profileImageView.loadCachedImageWith(url: url)
         }

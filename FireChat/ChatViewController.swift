@@ -50,31 +50,16 @@ class ChatViewController: UITableViewController {
         
         ref.observe(.childAdded, with: { (snapshot) in
             
-            let messageId = snapshot.key
-            let messageReference = FIRDatabase.database().reference().child("messages").child(messageId)
+            let partnerId = snapshot.key
             
-            messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
-                
-                if let dictionary = snapshot.value as? [String:AnyObject]
-                {
-                    let aMessage = Message()
-                    aMessage.setValuesForKeys(dictionary)
-                    
-                    if let chatPartnerID = aMessage.getChatParterID()
-                    {
-                        self.messageDictionary[chatPartnerID] = aMessage
-                        self.messages = Array(self.messageDictionary.values)
-                        self.messages.sort(by: { (message1, message2) -> Bool in
-                            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
-                        })
-                        
-                        self.timer?.invalidate()
-                        self.timer = Timer(timeInterval: 0.1, target: self, selector: #selector(self.reloadTable), userInfo: nil, repeats: false)
-                        
-                    }
-                    
-                }
-                
+          let userTimelineRef =  FIRDatabase.database().reference().child("timeline").child(uid).child(partnerId)
+           
+            userTimelineRef.observe(.childAdded, with: { (messgeSnapshot) in
+    
+                let messageId = messgeSnapshot.key
+            
+                self.fetchMessageWithMessageID(messageID: messageId)
+               
             }, withCancel: nil)
             
         }, withCancel: nil)
@@ -82,8 +67,44 @@ class ChatViewController: UITableViewController {
     }
     
     
+    private  func fetchMessageWithMessageID(messageID:String)
+    {
+        let messageReference = FIRDatabase.database().reference().child("messages").child(messageID)
+        
+        messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String:AnyObject]
+            {
+                let aMessage = Message()
+                aMessage.setValuesForKeys(dictionary)
+                
+                if let chatPartnerID = aMessage.getChatParterID()
+                {
+                    self.messageDictionary[chatPartnerID] = aMessage
+                }
+                self.attemptReload()
+
+            }
+            
+        }, withCancel: nil)
+    
+    }
+    
+    
+    
+    func attemptReload()
+    {
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.reloadTable), userInfo: nil, repeats: false)
+    }
+    
     func reloadTable()
     {
+        self.messages = Array(self.messageDictionary.values)
+        self.messages.sort(by: { (message1, message2) -> Bool in
+            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+        })
+
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
@@ -204,9 +225,11 @@ class ChatViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! UserCell
         
         let message = messages[indexPath.row]
-        if let toId = message.toId
+        
+        
+        if let userId:String = message.toId
         {
-            let reference = FIRDatabase.database().reference().child("users").child(toId)
+            let reference = FIRDatabase.database().reference().child("users").child(userId)
             reference.observeSingleEvent(of: .value, with: { (snapshot) in
                 
                 if let dic = snapshot.value as? [String:AnyObject]
@@ -215,12 +238,10 @@ class ChatViewController: UITableViewController {
                     
                     if let profileImage = dic["profileImageURL"] as? String
                     {
-                         cell.profileImageView.loadCachedImageWith(url: profileImage)
+                        cell.profileImageView.loadCachedImageWith(url: profileImage)
                     }
                 }
-                
             }, withCancel: nil)
-
         }
         
         cell.detailTextLabel?.text = message.text
