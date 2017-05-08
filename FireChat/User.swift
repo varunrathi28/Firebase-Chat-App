@@ -14,7 +14,8 @@ class User: NSObject {
     var email:String?
     var profileImageUrl:String?
     var id:String?
-//    
+//
+    
 //    init(name:String , email:String, profileImageUrl:String, id:String)
 //    {
 //        self.name = name

@@ -18,6 +18,10 @@ class AppTheme : NSObject
     
     static let kColorBorderTextField = UIColor(r: 220, g: 220, b: 220)
     
+    static let kChatBubbleBlueColor = UIColor(r: 0, g: 137, b: 249)
+    
+    static let kChatBubbleGrayColor = UIColor(r: 240, g: 240, b: 240)
+    
 }
 
 extension UIColor
@@ -26,5 +30,6 @@ extension UIColor
     {
         
         self.init(red:r/255, green: g/255, blue:b/255, alpha:1)
+        
     }
 }

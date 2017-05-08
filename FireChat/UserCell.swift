@@ -43,10 +43,8 @@ class UserCell: UITableViewCell {
         return imageView
     
     }()
-    
-    
-    
 
+    var userMessageType:ChatEnum?
     
     let timeLabel : UILabel = {
     
@@ -109,6 +107,11 @@ class UserCell: UITableViewCell {
             }, withCancel: nil)
             
         }
+        
+    }
+    
+    func configureCell()
+    {
         
     }
     

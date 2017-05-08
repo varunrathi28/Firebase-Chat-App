@@ -16,6 +16,8 @@ class ChatViewController: UITableViewController {
     var messages = [Message]()
     var messageDictionary = [String:Message]()
     
+    var timer:Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
       
@@ -66,10 +68,11 @@ class ChatViewController: UITableViewController {
                             return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
                         })
                         
+                        self.timer?.invalidate()
+                        self.timer = Timer(timeInterval: 0.1, target: self, selector: #selector(self.reloadTable), userInfo: nil, repeats: false)
+                        
                     }
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                    }
+                    
                 }
                 
             }, withCancel: nil)
@@ -79,31 +82,11 @@ class ChatViewController: UITableViewController {
     }
     
     
-    func observeMessages()
+    func reloadTable()
     {
-        let ref = FIRDatabase.database().reference().child("messages")
-        
-        ref.observe(.childAdded, with: { (snapshot) in
-            
-             if let dictionary = snapshot.value as? [String:AnyObject]
-            {
-                let aMessage = Message()
-                aMessage.setValuesForKeys(dictionary)
-                
-                if let toID = aMessage.toId
-                {
-                    self.messageDictionary[toID] = aMessage
-                    self.messages = Array( self.messageDictionary.values)
-                    self.messages.sort(by: { (message1, message2) -> Bool in
-                            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
-                        })
-                    
-                    self.tableView.reloadData()
-                }
-               
-            }
-            print(snapshot)
-        }, withCancel: nil)
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     

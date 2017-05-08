@@ -25,3 +25,11 @@ class Message: NSObject {
         return fromId == FIRAuth.auth()?.currentUser?.uid ? toId : fromId
     }
 }
+
+struct ChatEnum {
+    
+    enum ChatMessageType {
+        case eSenderMessage
+        case eReceiverMessage
+    }
+}
