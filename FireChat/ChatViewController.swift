@@ -20,17 +20,11 @@ class ChatViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-      
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
-        
         let image = UIImage(named: "create-message")
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openNewMessage))
-        
         // Do any additional setup after loading the view, typically from a nib.
-        
-          tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
-        
-      
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,17 +41,13 @@ class ChatViewController: UITableViewController {
         }
         
         let ref = FIRDatabase.database().reference().child("timeline").child(uid)
-        
         ref.observe(.childAdded, with: { (snapshot) in
             
-            let partnerId = snapshot.key
+        let partnerId = snapshot.key
+        let userTimelineRef =  FIRDatabase.database().reference().child("timeline").child(uid).child(partnerId)
+        userTimelineRef.observe(.childAdded, with: { (messgeSnapshot) in
             
-          let userTimelineRef =  FIRDatabase.database().reference().child("timeline").child(uid).child(partnerId)
-           
-            userTimelineRef.observe(.childAdded, with: { (messgeSnapshot) in
-    
                 let messageId = messgeSnapshot.key
-            
                 self.fetchMessageWithMessageID(messageID: messageId)
                
             }, withCancel: nil)
@@ -66,6 +56,7 @@ class ChatViewController: UITableViewController {
         
     }
     
+    // Utility functions for message per user and sorting them according to the time stamp
     
     private  func fetchMessageWithMessageID(messageID:String)
     {
@@ -83,15 +74,11 @@ class ChatViewController: UITableViewController {
                     self.messageDictionary[chatPartnerID] = aMessage
                 }
                 self.attemptReload()
-
             }
             
         }, withCancel: nil)
-    
     }
-    
-    
-    
+
     func attemptReload()
     {
         self.timer?.invalidate()
@@ -109,7 +96,6 @@ class ChatViewController: UITableViewController {
             self.tableView.reloadData()
         }
     }
-    
     
     func checkIfUserLoggedIn()
     {
@@ -130,11 +116,11 @@ class ChatViewController: UITableViewController {
         messages.removeAll()
         messageDictionary.removeAll()
         tableView.reloadData()
-       observeUserMessages()
+        observeUserMessages()
         
-       guard let uid = FIRAuth.auth()?.currentUser?.uid else
-       {
-        return
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else
+        {
+            return
         }
         let ref = FIRDatabase.database().reference().child("users").child(uid)
         ref.observe(.value, with: { (snapshot) in
@@ -142,9 +128,11 @@ class ChatViewController: UITableViewController {
             if let userDic = snapshot.value as? [String : AnyObject]
             {
                 let navigationView = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 40))
-                 let userImage = UIImageView()
+                let userImage = UIImageView()
                 navigationView.addSubview(userImage)
-               
+                
+                // User Image
+                
                 NSLayoutConstraint.useAndActivateConstraints(constraints: [
                     
                     userImage.centerYAnchor.constraint(equalTo: navigationView.centerYAnchor),
@@ -208,8 +196,6 @@ class ChatViewController: UITableViewController {
         
     }
     
-    
-    
     //MARK :- Tableview datasource and delegates
     
     override  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -249,26 +235,21 @@ class ChatViewController: UITableViewController {
         cell.message = message
         return cell
     }
-    
-    
+   
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let message = messages[indexPath.row]
-      
         guard let partnerID = message.getChatParterID() else  { return}
-        
         let ref = FIRDatabase.database().reference().child("users").child(partnerID)
-        
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
             
             guard let dictionary = snapshot.value as? [String:AnyObject] else {
                 return
             }
-            
-                let user = User()
+            let user = User()
             user.id = partnerID
-                user.setValuesForKeys(dictionary)
-                self.openChatScreenForUser(user: user)
+            user.setValuesForKeys(dictionary)
+            self.openChatScreenForUser(user: user)
             
         }, withCancel: nil)
     }

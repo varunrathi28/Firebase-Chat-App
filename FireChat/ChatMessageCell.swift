@@ -43,6 +43,14 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
+    let messageImageView:UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 16
+        imageView.layer.masksToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        
+        return imageView
+    }()
     
     var bubbleWidthAnchor:NSLayoutConstraint?
     var bubbleLeftAnchor:NSLayoutConstraint?
@@ -65,6 +73,10 @@ class ChatMessageCell: UICollectionViewCell {
         addSubview(textView)
         addSubview(profileImageView)
         
+        bubbleView.addSubview(messageImageView)
+        
+        // Profile Imageview x,y,w,h
+        
         NSLayoutConstraint.useAndActivateConstraints(constraints:[
             profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor,constant:8),
             profileImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
@@ -72,7 +84,8 @@ class ChatMessageCell: UICollectionViewCell {
             profileImageView.heightAnchor.constraint(equalToConstant: 32)
             ]
         )
-        
+    
+        // Bubble View x,y,w,h
         
         NSLayoutConstraint.useAndActivateConstraints(constraints:[
             bubbleView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -82,10 +95,8 @@ class ChatMessageCell: UICollectionViewCell {
         
         bubbleRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
         bubbleRightAnchor?.isActive = true
-        
         bubbleLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor,constant:8)
         bubbleLeftAnchor?.isActive = false
-        
         bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor?.isActive = true 
         
@@ -97,6 +108,7 @@ class ChatMessageCell: UICollectionViewCell {
             textView.heightAnchor.constraint(equalTo: self.heightAnchor)
             ])
         
+        // Message Bubble view x,y,w,h
         
     }
     

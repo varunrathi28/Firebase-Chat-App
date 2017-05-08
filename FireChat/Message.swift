@@ -19,6 +19,8 @@ class Message: NSObject {
 
     var timestamp:NSNumber?
     
+    var imageURL:String?
+    
     
     func getChatParterID()->String?
     {

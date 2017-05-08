@@ -69,9 +69,7 @@ extension LoginViewController : UIImagePickerControllerDelegate,UINavigationCont
         })
         
     }
-    
-    
-    
+
     func handleRegister()
     {
         guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
@@ -94,8 +92,7 @@ extension LoginViewController : UIImagePickerControllerDelegate,UINavigationCont
             }
             
             // Success authentication
-            
-            
+
             let imageName = NSUUID().uuidString
             let imageRef = FIRStorage.storage().reference().child("profile_images").child("\(imageName).png")
             let imageData = UIImagePNGRepresentation(self.profileImageView.image!)
@@ -115,13 +112,10 @@ extension LoginViewController : UIImagePickerControllerDelegate,UINavigationCont
                     
                 }
                 
-                
             })
             
-            
-            
-            
         })
+        
     }
     
     private    func registerUserWithID(uid:String , values:[String:AnyObject])

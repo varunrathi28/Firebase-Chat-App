@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class ChatLogController : UICollectionViewController , UITextFieldDelegate
+class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINavigationControllerDelegate
 {
     let cellID = "msgChatCell"
     
@@ -24,9 +24,20 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
     
     var containerViewBottomAnchor:NSLayoutConstraint?
     
+   lazy var  uploadImageIcon : UIImageView = {
+    
+        let imageview = UIImageView()
+        imageview.image = UIImage(named: "upload")
+        imageview.isUserInteractionEnabled = true
+        imageview.contentMode = .scaleAspectFill
+        imageview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUploadImage)))
+        return imageview
+    }()
+   
+    
     lazy var inputTextField :UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Enter a message..."
+        textField.placeholder = " Enter message..."
         textField.delegate = self
         return textField
     }()
@@ -47,7 +58,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         // sendButton.tintColor = UIColor.blue
         sendButton.setTitleColor(UIColor.blue, for: .normal)
         
-         containerView.addSubview(inputTextField)
+        containerView.addSubview(inputTextField)
         containerView.addSubview(sendButton)
         
         NSLayoutConstraint.useAndActivateConstraints(constraints: [
@@ -58,8 +69,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             sendButton.leftAnchor.constraint(equalTo: inputTextField.rightAnchor)
             ])
         
-         sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
-       
+        sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
         inputTextField.delegate = self
         
         NSLayoutConstraint.useAndActivateConstraints(constraints: [
@@ -177,12 +187,9 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         {
         
             let containerView = UIView()
-            
             containerView.backgroundColor = UIColor.white
-           // containerView.backgroundColor = UIColor.red
             containerView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(containerView)
-            
             
             NSLayoutConstraint.useAndActivateConstraints(constraints: [
                 containerView.heightAnchor.constraint(equalToConstant: 50),
@@ -191,18 +198,16 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
                
                 ])
             
-            let uploadImageIcon = UIImageView()
-            uploadImageIcon.image = UIImage(named:"upload")
             containerView.addSubview(uploadImageIcon)
             
             NSLayoutConstraint.useAndActivateConstraints(constraints: [
                 
                 uploadImageIcon.leftAnchor.constraint(equalTo: containerView.leftAnchor),
                 uploadImageIcon.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-                uploadImageIcon.widthAnchor.constraint(equalToConstant: 44),
-                uploadImageIcon.heightAnchor.constraint(equalToConstant: 44)
+                uploadImageIcon.widthAnchor.constraint(equalToConstant: 32),
+                uploadImageIcon.heightAnchor.constraint(equalToConstant: 32)
                 ])
-            
+          
             
             // store a reference to bottom anchor (Use it for shifting in case of keyboards)
             
@@ -235,7 +240,6 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
                 inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor,constant :0)
                 ])
         
-            
             let separtorView = UIView()
             containerView.addSubview(separtorView)
             separtorView.backgroundColor = UIColor.lightGray
@@ -341,8 +345,72 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
     func handleUploadImage()
     {
         
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        present(imagePickerController, animated: true, completion: nil)
+        
     }
 
+    func uploadImageToFirebase(image:UIImage)
+    {
+        let imageName = NSUUID().uuidString
+        let ref = FIRStorage.storage().reference().child("message-images").child(imageName)
+        
+        if let uploadData = UIImageJPEGRepresentation(image, 0.2)
+        {
+            ref.put(uploadData, metadata: nil, completion: { (metadata, error) in
+                if error != nil
+                {
+                    print("FC:Image Upload Error");
+                    return
+                }
+                
+                if let downloadUrl = metadata?.downloadURL()?.absoluteString
+                {
+                    self.sendMessageWithImageUrl(imageUrl: downloadUrl)
+                }
+            })
+            
+        }
+        
+    }
+    
+    func sendMessageWithImageUrl(imageUrl:String)
+    {
+        let toID = recipient?.id
+        let fromID = FIRAuth.auth()?.currentUser?.uid
+        let timestamp:NSNumber  = NSNumber(value: NSDate.timeIntervalSinceReferenceDate)
+        let values:[String:Any] = ["imageURL":imageUrl,
+                                   "toId":toID,
+                                   "fromId":fromID,
+                                   "timestamp":timestamp
+        ]
+        let reference = FIRDatabase.database().reference().child("messages")
+        let childReference = reference.childByAutoId()
+        
+        // childReference.updateChildValues(values)
+        childReference.updateChildValues(values, withCompletionBlock: { (error, reference) in
+            
+            if error != nil
+            {
+                print("FC:Error in Sending messages")
+                return
+            }
+            
+            let timelineReference = FIRDatabase.database().reference().child("timeline").child(fromID!).child(toID!)
+            
+            // update message in parent message node as well... (Fan out)
+            
+            let messageID = childReference.key
+            timelineReference.updateChildValues([messageID: 1])
+            
+            let recipientUserRef = FIRDatabase.database().reference().child("timeline").child(toID!).child(fromID!)
+            recipientUserRef.updateChildValues([messageID:1])
+        })
+
+    }
+    
     
     // MARK : - CollectionView Methods
     
@@ -358,8 +426,12 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
         cell.textView.text = message.text
         
         configureMessagecell(cell: cell, message: message)
-        cell.bubbleWidthAnchor?.constant = getBoundingRectForText(text: message.text!).width + 32
         
+        if let msgText = message.text
+        {
+             cell.bubbleWidthAnchor?.constant = getBoundingRectForText(text: msgText).width + 32
+        }
+       
         return cell
     }
     
@@ -384,18 +456,13 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate
             cell.bubbleLeftAnchor?.isActive = true
             cell.bubbleRightAnchor?.isActive = false
             cell.profileImageView.isHidden = false
-            
         }
-        
-
     }
     
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
        collectionView?.collectionViewLayout.invalidateLayout()
     }
-    
-    
 }
 
 extension ChatLogController:UICollectionViewDelegateFlowLayout
@@ -408,19 +475,46 @@ extension ChatLogController:UICollectionViewDelegateFlowLayout
             height = getBoundingRectForText(text: message).height + 20
         }
         
-        
         let boundsWidth = UIScreen.main.bounds.size.width
         return CGSize(width: boundsWidth, height: height)
     }
     
     
      func getBoundingRectForText(text:String)->CGRect
-    {
+     {
         let size = CGSize(width: 200, height: 1000)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
         
-      return   NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 16 )], context: nil)
+        return   NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 16 )], context: nil)
         
     }
+}
+
+extension ChatLogController:UIImagePickerControllerDelegate
+{
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+     
+        var selectedImage:UIImage?
+        if let editedImage = info[UIImagePickerControllerEditedImage] as? UIImage
+        {
+            selectedImage = editedImage
+        }
+        else if let  originalImage = info[UIImagePickerControllerOriginalImage] as? UIImage
+        {
+            
+            selectedImage = originalImage
+        }
+        
+        if let selectedImageFromPicker = selectedImage
+        {
+            uploadImageToFirebase(image: selectedImageFromPicker)
+        }
+        
+        dismiss(animated: true, completion: nil)
+
+    }
 }

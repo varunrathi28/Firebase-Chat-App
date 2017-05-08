@@ -14,27 +14,21 @@ class NewMessageController: UITableViewController {
     var messagesController : ChatViewController?
     var arrUsers = [User]()
     let cellID = "newMessageCell"
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UserCell.self, forCellReuseIdentifier: cellID )
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(pressedCancel))
-        
         fetchUsers()
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      
-        
     }
     
     func fetchUsers()
     {
         let ref = FIRDatabase.database().reference().child("users")
-        
         ref.observe(.childAdded, with: { (snapshot) in
             print(snapshot)
            if let val = snapshot.value as? [String : AnyObject]
@@ -54,15 +48,12 @@ class NewMessageController: UITableViewController {
             }
             
         }, withCancel: nil)
-        
-        
     }
     
     func pressedCancel()
     {
         dismiss(animated: true, completion: nil)
-    } 
-    
+    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arrUsers.count
@@ -74,12 +65,11 @@ class NewMessageController: UITableViewController {
         let user = arrUsers[indexPath.row]
         cell.textLabel?.text = "\(user.name!)"
         cell.detailTextLabel?.text = "\(user.email!)"
-       if  let url = user.profileImageURL
-       {
+        if  let url = user.profileImageURL
+        {
             cell.profileImageView.loadCachedImageWith(url: url)
         }
         
-      
         return cell
         
     }
@@ -87,16 +77,14 @@ class NewMessageController: UITableViewController {
    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(64)
     }
-    
-    
+
    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     
     let selectedUser = arrUsers[indexPath.row]
     let chatLogVC = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
     chatLogVC.recipient = selectedUser
     navigationController?.pushViewController(chatLogVC, animated: true)
-    
-    
+
     }
     
 }

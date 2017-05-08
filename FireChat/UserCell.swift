@@ -35,16 +35,14 @@ class UserCell: UITableViewCell {
     
     let profileImageView:UIImageView = {
     let imageView = UIImageView()
-        imageView.image = UIImage(named:"got")
         imageView.contentMode = .scaleAspectFill
-       
         imageView.layer.cornerRadius = imageView.frame.size.height/2
         imageView.layer.masksToBounds = true
         return imageView
     
     }()
+    
 
-    var userMessageType:ChatEnum?
     
     let timeLabel : UILabel = {
     
@@ -57,16 +55,8 @@ class UserCell: UITableViewCell {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
         addSubview(profileImageView)
-        
-//        profileImageView.snp.makeConstraints { (make) in
-//            make.leftMargin.equalTo(8)
-//            make.width.equalTo(40)
-//            make.height.equalTo(40)
-//            make.centerY.equalTo(self)
-//        }
-        
-        
         addSubview(timeLabel)
+        
         
         NSLayoutConstraint.useAndActivateConstraints(constraints: [
             
