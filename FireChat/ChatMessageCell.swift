@@ -1,4 +1,4 @@
-//
+    //
 //  ChatMessageCell.swift
 //  FireChat
 //
@@ -8,8 +8,14 @@
 
 import UIKit
 
+protocol ChatCellProtocol
+{
+    func performZoomingForStartingImage(image:UIImageView)
+}
+
 class ChatMessageCell: UICollectionViewCell {
     
+    var delegate:ChatCellProtocol! = nil
     
     let textView:UITextView = {
     
@@ -44,7 +50,7 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let messageImageView:UIImageView = {
+    lazy var messageImageView:UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
@@ -126,6 +132,19 @@ class ChatMessageCell: UICollectionViewCell {
     
     func handleZoom(gesture:UITapGestureRecognizer)
     {
+        if let imageview = gesture.view as? UIImageView
+        {
+            
+            if delegate != nil
+            {
+                self.delegate.performZoomingForStartingImage(image: imageview)
+            }
+        }
+    }
+    
+    
+    override func prepareForReuse() {
+        messageImageView.image = nil
         
     }
     

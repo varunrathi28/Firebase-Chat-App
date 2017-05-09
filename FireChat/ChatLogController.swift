@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINavigationControllerDelegate
+class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINavigationControllerDelegate,ChatCellProtocol
 {
     let cellID = "msgChatCell"
     
@@ -97,6 +97,9 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
         return containerView
     
     }()
+    
+    
+ 
     
 //   override var inputAccessoryView: UIView?
 //   {
@@ -445,6 +448,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
             cell.messageImageView.loadCachedImageWith(url: messageImageUrl)
             cell.bubbleView.backgroundColor = UIColor.clear
             cell.textView.isHidden = true
+            cell.delegate = self
             
         }
         else
@@ -480,9 +484,55 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
        collectionView?.collectionViewLayout.invalidateLayout()
     }
     
-    // Zooming 
+    // Zooming
     
-    func performZoomingForImageView()
+    var startingFrame:CGRect?
+    
+    var zoomedView:UIImageView?
+    
+    func performZoomingForStartingImage(image: UIImageView) {
+        
+        
+        let initialFrame = image.superview?.convert(image.frame, to: nil)
+        startingFrame = initialFrame
+        let zoomingImageView = UIImageView(frame: initialFrame!)
+        zoomedView = zoomingImageView
+        zoomingImageView.backgroundColor = UIColor.red
+        zoomingImageView.image = image.image
+        zoomingImageView.isUserInteractionEnabled = true
+        zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut(gesuture:))))
+        if let keyWindow =  UIApplication.shared.keyWindow
+        {
+            let backgroundView = UIView(frame: keyWindow.frame)
+            backgroundView.backgroundColor = UIColor.black
+            backgroundView.alpha = 0
+            
+            keyWindow.addSubview(backgroundView)
+            keyWindow.addSubview(zoomingImageView)
+            let height = (startingFrame!.height / startingFrame!.width) * keyWindow.frame.width
+            
+            UIView.animate(withDuration: 0.3, delay: 0.1, options: [.curveEaseOut], animations: {
+                backgroundView.alpha = 1
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height:height)
+                zoomingImageView.center = keyWindow.center
+                
+            }, completion: nil )
+        }
+    }
+    
+    func handleZoomOut(gesuture:UITapGestureRecognizer)
+    {
+       zoomedView?.backgroundColor = UIColor.clear
+       
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn], animations: {
+            self.zoomedView?.frame = self.startingFrame!
+            let keywindow = UIApplication.shared.keyWindow
+            let subviews = keywindow?.subviews
+            
+            
+        }, completion: nil)
+
+    }
 }
 
 extension ChatLogController:UICollectionViewDelegateFlowLayout
@@ -544,3 +594,4 @@ extension ChatLogController:UIImagePickerControllerDelegate
 
     }
 }
+
