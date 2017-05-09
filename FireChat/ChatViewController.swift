@@ -41,6 +41,7 @@ class ChatViewController: UITableViewController {
             return
         }
         
+        // Observer for all the child in the node
         let ref = FIRDatabase.database().reference().child("timeline").child(uid)
         ref.observe(.childAdded, with: { (snapshot) in
             
@@ -52,6 +53,15 @@ class ChatViewController: UITableViewController {
                 self.fetchMessageWithMessageID(messageID: messageId)
                
             }, withCancel: nil)
+            
+        }, withCancel: nil)
+        
+        // Observer for removing a child from the node
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+           
+                self.messageDictionary.removeValue(forKey: snapshot.key)
+                self.attemptReload()
             
         }, withCancel: nil)
         
@@ -256,6 +266,34 @@ class ChatViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        
+        let msgToDelete = messages[indexPath.row]
+        if let chatPartnerID = msgToDelete.getChatParterID()
+        {
+            let reference = FIRDatabase.database().reference().child("timeline").child(uid).child(chatPartnerID)
+            reference.removeValue(completionBlock: { (error, ref) in
+                
+                if error != nil
+                {
+                    print("FC:Failure deleting message")
+                    return
+                }
+                
+                
+                self.messageDictionary.removeValue(forKey: chatPartnerID)
+                self.attemptReload()
+            })
+            
+        }
+        
+        
+        
     }
     
 }

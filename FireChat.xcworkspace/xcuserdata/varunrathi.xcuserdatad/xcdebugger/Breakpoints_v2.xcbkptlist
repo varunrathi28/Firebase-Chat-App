@@ -132,11 +132,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "207"
-            endingLineNumber = "207"
+            startingLineNumber = "218"
+            endingLineNumber = "218"
             landmarkName = "ChatViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -148,11 +148,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
+            startingLineNumber = "214"
+            endingLineNumber = "214"
             landmarkName = "ChatViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -180,11 +180,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
+            startingLineNumber = "226"
+            endingLineNumber = "226"
             landmarkName = "tableView(_:cellForRowAt:)"
             landmarkType = "7">
             <Locations>
@@ -196,11 +196,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.790763"
+                  timestampString = "516060590.062463"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
+                  startingLineNumber = "226"
+                  endingLineNumber = "226"
                   offsetFromSymbolStart = "368">
                </Location>
                <Location
@@ -211,11 +211,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.793039"
+                  timestampString = "516060590.064848"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
+                  startingLineNumber = "226"
+                  endingLineNumber = "226"
                   offsetFromSymbolStart = "484">
                </Location>
             </Locations>
@@ -228,11 +228,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "516014561.976423"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "161"
-            endingLineNumber = "161"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
          </BreakpointContent>
@@ -244,11 +244,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "240"
-            endingLineNumber = "240"
+            startingLineNumber = "251"
+            endingLineNumber = "251"
             landmarkName = "tableView(_:didSelectRowAt:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -260,11 +260,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "245"
-            endingLineNumber = "245"
+            startingLineNumber = "256"
+            endingLineNumber = "256"
             landmarkName = "tableView(_:didSelectRowAt:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -276,11 +276,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "243"
-            endingLineNumber = "243"
+            startingLineNumber = "254"
+            endingLineNumber = "254"
             landmarkName = "tableView(_:didSelectRowAt:)"
             landmarkType = "7">
             <Locations>
@@ -292,11 +292,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.816427"
+                  timestampString = "516060590.087332"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "243"
-                  endingLineNumber = "243"
+                  startingLineNumber = "254"
+                  endingLineNumber = "254"
                   offsetFromSymbolStart = "604">
                </Location>
                <Location
@@ -307,11 +307,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.818915"
+                  timestampString = "516060590.089619"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "245"
-                  endingLineNumber = "245"
+                  startingLineNumber = "256"
+                  endingLineNumber = "256"
                   offsetFromSymbolStart = "44">
                </Location>
             </Locations>
@@ -324,11 +324,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
+            startingLineNumber = "131"
+            endingLineNumber = "131"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
          </BreakpointContent>
@@ -340,11 +340,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
          </BreakpointContent>
@@ -356,11 +356,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "125"
-            endingLineNumber = "125"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
             <Locations>
@@ -372,11 +372,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.824801"
+                  timestampString = "516060590.095508"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "125"
-                  endingLineNumber = "125"
+                  startingLineNumber = "136"
+                  endingLineNumber = "136"
                   offsetFromSymbolStart = "1268">
                </Location>
                <Location
@@ -387,11 +387,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.827237"
+                  timestampString = "516060590.097904"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "127"
-                  endingLineNumber = "127"
+                  startingLineNumber = "138"
+                  endingLineNumber = "138"
                   offsetFromSymbolStart = "32">
                </Location>
             </Locations>
@@ -404,11 +404,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "516014514.166509"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
             <Locations>
@@ -420,11 +420,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.834739"
+                  timestampString = "516060590.104078"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "127"
-                  endingLineNumber = "127"
+                  startingLineNumber = "138"
+                  endingLineNumber = "138"
                   offsetFromSymbolStart = "32">
                </Location>
                <Location
@@ -435,11 +435,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.837147"
+                  timestampString = "516060590.106405"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "127"
-                  endingLineNumber = "127"
+                  startingLineNumber = "138"
+                  endingLineNumber = "138"
                   offsetFromSymbolStart = "476">
                </Location>
             </Locations>
@@ -452,11 +452,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
             <Locations>
@@ -516,7 +516,7 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/LoginViewController+Handlers.swift"
-                  timestampString = "516056950.843044"
+                  timestampString = "516060590.112779"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "135"
@@ -531,7 +531,7 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/LoginViewController+Handlers.swift"
-                  timestampString = "516056950.846965"
+                  timestampString = "516060590.115249"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "137"
@@ -548,11 +548,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515962017.354152"
+            timestampString = "516059429.761169"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
             landmarkName = "observeUserMessages()"
             landmarkType = "7">
          </BreakpointContent>
@@ -564,11 +564,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515962017.354152"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
             landmarkName = "observeUserMessages()"
             landmarkType = "7">
             <Locations>
@@ -612,11 +612,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
+            startingLineNumber = "203"
+            endingLineNumber = "203"
             landmarkName = "openChatScreenForUser(user:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -708,11 +708,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "105"
+            endingLineNumber = "105"
             landmarkName = "reloadTable()"
             landmarkType = "7">
             <Locations>
@@ -724,11 +724,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.888901"
+                  timestampString = "516060590.155696"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "94"
-                  endingLineNumber = "94"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
                   offsetFromSymbolStart = "484">
                </Location>
                <Location
@@ -739,11 +739,11 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatViewController.swift"
-                  timestampString = "516056950.891296"
+                  timestampString = "516060590.158003"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "95"
-                  endingLineNumber = "95"
+                  startingLineNumber = "106"
+                  endingLineNumber = "106"
                   offsetFromSymbolStart = "16">
                </Location>
             </Locations>
@@ -756,11 +756,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515962017.354152"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "50"
-            endingLineNumber = "50"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
             landmarkName = "observeUserMessages()"
             landmarkType = "7">
          </BreakpointContent>
@@ -772,11 +772,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "attemptReload()"
             landmarkType = "7">
          </BreakpointContent>
@@ -788,11 +788,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "515969363.033193"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
             landmarkName = "reloadTable()"
             landmarkType = "7">
          </BreakpointContent>
@@ -884,7 +884,7 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatMessageCell.swift"
-                  timestampString = "516056950.923387"
+                  timestampString = "516060590.187483"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "135"
@@ -899,7 +899,7 @@
                   moduleName = "FireChat"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/varunrathi/Documents/POC%20Projetcs/New/Demo/Lets%20Build%20App/FireChat/FireChat/ChatMessageCell.swift"
-                  timestampString = "516056950.92581"
+                  timestampString = "516060590.190725"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "135"
@@ -932,11 +932,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "516014510.493624"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "131"
-            endingLineNumber = "131"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
          </BreakpointContent>
@@ -948,11 +948,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FireChat/ChatViewController.swift"
-            timestampString = "516014553.941322"
+            timestampString = "516060585.832106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
             landmarkName = "checkUserAndSetupNavigationBar()"
             landmarkType = "7">
          </BreakpointContent>
@@ -970,6 +970,22 @@
             startingLineNumber = "507"
             endingLineNumber = "507"
             landmarkName = "performZoomingForStartingImage(image:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FireChat/ChatViewController.swift"
+            timestampString = "516060585.832106"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "observeUserMessages()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
