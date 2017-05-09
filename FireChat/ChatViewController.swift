@@ -25,6 +25,7 @@ class ChatViewController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openNewMessage))
         // Do any additional setup after loading the view, typically from a nib.
         tableView.register(UserCell.self, forCellReuseIdentifier: cellID)
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -251,6 +252,10 @@ class ChatViewController: UITableViewController {
             self.openChatScreenForUser(user: user)
             
         }, withCancel: nil)
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
     
 }

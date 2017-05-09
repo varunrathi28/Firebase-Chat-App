@@ -487,51 +487,60 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
     // Zooming
     
     var startingFrame:CGRect?
-    
-    var zoomedView:UIImageView?
+    var imageBackgroundView: UIView?
+    var startingImageView:UIImageView?
     
     func performZoomingForStartingImage(image: UIImageView) {
         
+        self.startingImageView = image
+        startingImageView?.isHidden = true
         
-        let initialFrame = image.superview?.convert(image.frame, to: nil)
-        startingFrame = initialFrame
-        let zoomingImageView = UIImageView(frame: initialFrame!)
-        zoomedView = zoomingImageView
+         startingFrame = image.superview?.convert(image.frame, to: nil)
+        let zoomingImageView = UIImageView(frame: startingFrame!)
         zoomingImageView.backgroundColor = UIColor.red
         zoomingImageView.image = image.image
         zoomingImageView.isUserInteractionEnabled = true
         zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut(gesuture:))))
         if let keyWindow =  UIApplication.shared.keyWindow
         {
-            let backgroundView = UIView(frame: keyWindow.frame)
-            backgroundView.backgroundColor = UIColor.black
-            backgroundView.alpha = 0
+             imageBackgroundView = UIView(frame: keyWindow.frame)
+            imageBackgroundView?.backgroundColor = UIColor.black
+            imageBackgroundView?.alpha = 0
             
-            keyWindow.addSubview(backgroundView)
+            keyWindow.addSubview(imageBackgroundView!)
             keyWindow.addSubview(zoomingImageView)
             let height = (startingFrame!.height / startingFrame!.width) * keyWindow.frame.width
             
-            UIView.animate(withDuration: 0.3, delay: 0.1, options: [.curveEaseOut], animations: {
-                backgroundView.alpha = 1
-                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height:height)
-                zoomingImageView.center = keyWindow.center
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 
-            }, completion: nil )
+                self.imageBackgroundView?.alpha = 1
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height:height)
+                
+                zoomingImageView.center = keyWindow.center
+            }, completion: nil)
         }
     }
     
+    // This is zoom image back to its origin position and remove background view from the key window
+    
     func handleZoomOut(gesuture:UITapGestureRecognizer)
     {
-       zoomedView?.backgroundColor = UIColor.clear
-       
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn], animations: {
-            self.zoomedView?.frame = self.startingFrame!
-            let keywindow = UIApplication.shared.keyWindow
-            let subviews = keywindow?.subviews
+     if  let zoomedImageView = gesuture.view as? UIImageView
+     {
+        startingImageView?.layer.cornerRadius = 16
+        startingImageView?.layer.masksToBounds = true
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             
+            zoomedImageView.frame = self.startingFrame!
+            self.imageBackgroundView?.alpha = 0
             
-        }, completion: nil)
-
+        }, completion: { (completed) in
+            zoomedImageView.removeFromSuperview()
+            self.startingImageView?.isHidden = false
+        })
+    
+     }
     }
 }
 
