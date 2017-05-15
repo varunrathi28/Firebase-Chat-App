@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import MobileCoreServices
 
 class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINavigationControllerDelegate,ChatCellProtocol
 {
@@ -315,6 +316,7 @@ class ChatLogController : UICollectionViewController , UITextFieldDelegate, UINa
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
         imagePickerController.allowsEditing = true
+        imagePickerController.mediaTypes = [kUTTypeImage as String,kUTTypeMovie as String]
         present(imagePickerController, animated: true, completion: nil)
         
     }
@@ -583,6 +585,20 @@ extension ChatLogController:UIImagePickerControllerDelegate
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
      
+        if let videoURL = info[UIImagePickerControllerMediaURL] as? URL
+        {
+          handleSelectedVideoForURL(videoURL: videoURL)
+        }
+        else
+        {
+            handleImageSelectedFor(info: info)
+        }
+        
+      
+    }
+    
+    private func handleImageSelectedFor(info:[String:Any])
+    {
         var selectedImage:UIImage?
         if let editedImage = info[UIImagePickerControllerEditedImage] as? UIImage
         {
@@ -601,6 +617,38 @@ extension ChatLogController:UIImagePickerControllerDelegate
         
         dismiss(animated: true, completion: nil)
 
+    }
+
+    
+    private func handleSelectedVideoForURL(videoURL:URL)
+    {
+        let fileName = NSUUID().uuidString
+        let reference  = FIRStorage.storage().reference().child("user-videos").child("\(videoURL).mp4")
+       let uploadTask = reference.putFile(videoURL, metadata: nil, completion: { (metadata, error) in
+            
+            if error != nil
+            {
+                print("FC:Error Uploading video")
+            }
+            
+            if let storageURL = metadata?.downloadURL()?.absoluteString
+            {
+                
+            }
+            
+        })
+        
+        uploadTask.observe(.progress) { (snapshot) in
+            if let completedUnit = snapshot.progress?.completedUnitCount
+            {
+                    self.navigationItem.title = String(completedUnit)
+            }
+        }
+        
+        uploadTask.observe(.success) { (snapshot) in
+            self.navigationItem.title = self.recipient?.name
+        }
+        
     }
 }
 
